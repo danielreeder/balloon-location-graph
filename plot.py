@@ -4,26 +4,6 @@ import pandas as pd
 import geopandas as gpd
 import seaborn as sns
 
-# def main():
-#     df_steal = pd.read_csv("fire_archive_M6_96619.csv", usecols=["latitude", "longitude", "brightness", "acq_date"], parse_dates=["acq_date"])
-#     df = pd.read_csv("cfips_location.csv", usecols=["lat", "lng"])
-#     df['brightness'] = df_steal['brightness']
-#     df['acq_date'] = df_steal['acq_date']
-#     df = df.query('lat > 20 and lng < -40')
-
-#     # initialize an axis
-#     fig, ax = plt.subplots(figsize=(8,6))# plot map on axis
-
-#     countries = gpd.read_file(gpd.datasets.get_path("naturalearth_lowres"))
-
-#     countries.query("name == 'United States of America' or name == 'Canada'").plot(color="lightgrey",  ax=ax)# parse dates for plot's title    
-#     first_month = df["acq_date"].min().strftime("%b %Y")
-#     last_month = df["acq_date"].max().strftime("%b %Y")# plot points
-
-#     df.plot(x="lng", y="lat", kind="scatter", c="brightness", colormap="YlOrRd", title=f"Fires in Australia {first_month} to {last_month}", ax=ax)# add grid
-
-#     ax.grid(alpha=0.5)
-#     plt.show()
 from cmath import nan
 import numpy as np
 import matplotlib.pyplot as plt
@@ -107,17 +87,6 @@ class MainWindow(QMainWindow):
         self.sc.ax.set_ylabel('Latitude')
         self.sc.draw_idle() 
         self.j += 1
-
-    def clicked(self):
-        self.to_plot_lng = np.append(self.to_plot_lng, self.lng[self.j])
-        self.to_plot_lat = np.append(self.to_plot_lat, self.lat[self.j])
-        self.to_plot_bright = np.append(self.to_plot_bright, self.bright[self.j])
-        self.sc.ax.scatter(x=self.to_plot_lng, y=self.to_plot_lat, c=self.to_plot_bright, cmap='Blues')
-        self.sc.ax.set_xlabel('Longitude')
-        self.sc.ax.set_ylabel('Latitude')
-        self.sc.draw_idle() 
-        self.j += 1
-        
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
