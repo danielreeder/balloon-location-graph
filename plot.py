@@ -47,46 +47,56 @@ class MainWindow(QMainWindow):
     def init_ui(self):
         self.widget = QWidget()
         self.layout = QVBoxLayout()
+        self.layout_temp = QVBoxLayout()
         
         self.sc = MplCanvas(self, width=50, height=30, dpi=100)
-        df_steal = pd.read_csv("fire_archive_M6_96619.csv", usecols=["latitude", "longitude", "brightness", "acq_date"], parse_dates=["acq_date"])
-        df = pd.read_csv('/Users/danielreeder/Downloads/geopandas-tutorial-master/data/uscities.csv', usecols=['state_name', 'lat', 'lng']).query("state_name == 'Oregon'").reset_index()
-
-        self.lng = df['lng']
-        self.lat = df['lat']
-        df['brightness'] = df_steal['brightness']
-        states = gpd.read_file('/Users/danielreeder/Downloads/geopandas-tutorial-master/data/usa-states-census-2014.shp')
+        # self.sc_temp = MplCanvas(self, width=50, height=30, dpi=100)
+        df_kk7 = pd.read_csv('KK7MXV-11.csv')
+        df_ko4 = pd.read_csv('KO4TL-11.csv')
+        # df_kk7['temp'] = df_kk7[['comment']].apply(self.parse_comment, axis=1)
+        # df_ko4['temp'] = df_ko4[['comment']].apply(self.parse_comment, axis=1)
+        # print("ko4:" + df_ko4['temp'])
+        states = gpd.read_file('data/usa-states-census-2014.shp')
         states.query("NAME == 'Oregon'").boundary.plot(color='black', ax=self.sc.ax)  
-        states.query("NAME == 'Oregon'").plot(ax=self.sc.ax) 
-        self.bright = df['brightness']
-        self.to_plot_lng = np.array(self.lng[0])
-        self.to_plot_lat = np.array(self.lat[0])
-        self.to_plot_bright = np.array(self.bright[0])
-        self.sc.ax.scatter(x=self.to_plot_lng, y=self.to_plot_lat, c=self.to_plot_bright, cmap='Blues')
+        roads = gpd.read_file('data/USA_roads.shp')
+        roads.plot(color='black', ax=self.sc.ax)
+        self.sc.ax.scatter(x=df_kk7['lng'], y=df_kk7['lat'], c=df_kk7['altitude'], cmap='Blues', s=10)
+        self.sc.ax.scatter(x=df_ko4['lng'], y=df_ko4['lat'], c=df_ko4['altitude'], cmap='Reds', s=10)
         self.sc.ax.grid(alpha=0)
         self.sc.ax.set_xlabel('Longitude')
         self.sc.ax.set_ylabel('Latitude')
-        submit = QPushButton('Refresh')
+        self.sc.ax.set_xlim(min(min(df_kk7['lng']), min(df_ko4['lng']))-.05, max(max(df_kk7['lng']), max(df_ko4['lng']))+.05)
+        self.sc.ax.set_ylim(min(min(df_kk7['lat']), min(df_ko4['lat']))-.05, max(max(df_kk7['lat']), max(df_ko4['lat']))+.05)
+        # self.sc_temp.ax.scatter(x=df_kk7['lng'], y=df_kk7['lat'], c=df_kk7['temp'], cmap='plasma', s=10)
+        # self.sc_temp.ax.scatter(x=df_ko4['lng'], y=df_ko4['lat'], c=df_ko4['temp'], cmap='plasma', s=10)
+        # self.sc_temp.ax.grid(alpha=0)
+        # self.sc_temp.ax.set_xlabel('Longitude')
+        # self.sc_temp.ax.set_ylabel('Latitude')
+        # self.sc_temp.ax.set_xlim(min(min(df_kk7['lng']), min(df_ko4['lng']))-.05, max(max(df_kk7['lng']), max(df_ko4['lng']))+.05)
+        # self.sc_temp.ax.set_ylim(min(min(df_kk7['lat']), min(df_ko4['lat']))-.05, max(max(df_kk7['lat']), max(df_ko4['lat']))+.05)
+        submit = QPushButton('Swap')
         submit.clicked.connect(self.update_plot)
         self.j = 0
         
         self.signal.connect(self.update_plot)
         self.layout.addWidget(submit)
         self.layout.addWidget(self.sc)
+        # self.layout_temp.addWidget(self.c.sc_temp)
         
         self.widget.setLayout(self.layout)
         self.setCentralWidget(self.widget)
         self.show()
         
     def update_plot(self):
-        self.to_plot_lng = np.append(self.to_plot_lng, self.lng[self.j])
-        self.to_plot_lat = np.append(self.to_plot_lat, self.lat[self.j])
-        self.to_plot_bright = np.append(self.to_plot_bright, self.bright[self.j])
-        self.sc.ax.scatter(x=self.to_plot_lng, y=self.to_plot_lat, c=self.to_plot_bright, cmap='Blues')
-        self.sc.ax.set_xlabel('Longitude')
-        self.sc.ax.set_ylabel('Latitude')
-        self.sc.draw_idle() 
-        self.j += 1
+        if j%2 == 0:
+            self.widget.setLayout(self.layout_temp)
+            j += 1
+            return
+        self.widget.setLayout(self.layout)
+
+    def parse_comment(self, comment):
+        print(comment[0])
+        return comment[0].split(' ')[1]
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
