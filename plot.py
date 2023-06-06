@@ -69,7 +69,7 @@ class MainWindow(QMainWindow):
         self.sc.ax.set_ylabel('Latitude')
         self.sc.ax.set_xlim(min(min(df_kk7['lng']), min(df_ko4['lng']))-.05, max(max(df_kk7['lng']), max(df_ko4['lng']))+.05)
         self.sc.ax.set_ylim(min(min(df_kk7['lat']), min(df_ko4['lat']))-.05, max(max(df_kk7['lat']), max(df_ko4['lat']))+.05)
-        # self.sc_temp.ax.scatter(x=df_kk7['lng'], y=df_kk7['lat'], c=df_kk7['temp'], cmap='plasma', s=10)
+        self.sc_temp.ax.scatter(x=df_kk7['lng'], y=df_kk7['lat'], c=df_kk7['temp'], cmap='Blues', s=10)
         self.sc_temp.ax.scatter(x=df_ko4['lng'], y=df_ko4['lat'], c=df_ko4['temp'], cmap='plasma', s=10)
         self.sc_temp.ax.grid(alpha=0)
         self.sc_temp.ax.set_xlabel('Longitude')
